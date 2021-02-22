@@ -39,7 +39,8 @@ int main(int argc, char const *argv[])
     Mat t_out, t_out_cropped;
     warpPerspective(traffic, t_out, h, traffic.size());
 
-    Rect crop(447, 10, 400, 800);
+    // Rect crop(447, 10, 400, 800);
+    Rect crop(472, 52, 328, 778);
     t_out_cropped = t_out(crop);
 
     namedWindow("Warped", WINDOW_NORMAL);
