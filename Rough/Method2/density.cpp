@@ -31,9 +31,9 @@ int processVideo(string name, int X,int Y )
 {
 
     Ptr<BackgroundSubtractor> pBackSub1;        //creating two backgroundSubstractor instances and
-    Ptr<BackgroundSubtractor> pBackSub2;        //two pointers p[ointing to each of them
+    // Ptr<BackgroundSubtractor> pBackSub2;        //two pointers p[ointing to each of them
     pBackSub1 = createBackgroundSubtractorMOG2(500,128,false);     
-    pBackSub2 = createBackgroundSubtractorMOG2(300,16,false);
+    // pBackSub2 = createBackgroundSubtractorMOG2(300,16,false);
 
     VideoCapture capture(name + ".mp4");        //open the video
     if (!capture.isOpened()){                   //cheacking if video exists, returning error otherwise
@@ -47,18 +47,18 @@ int processVideo(string name, int X,int Y )
         return -1;
     }
     double pixels;
-    Mat fgMask1, fgMask2;
+    Mat fgMask1;
     ofstream myfile;
     myfile.open("output_" + to_string(X) + "_" + to_string(Y) + ".txt");
-    myfile <<  "Time" << "," << "Queue Density" << "," << "Dynamic Density" << "\n"; 
+    myfile <<  "Time" << "," << "Queue Density" << "\n"; 
     // cout <<  "Time" << "," << "Queue Density" << "," << "Dynamic Density" << "\n";
-    double whitePixels1, whitePixels2;             
+    double whitePixels1;             
 
     while (true) {
         pixels = double(frame.total());
 
         pBackSub1->apply(frame, fgMask1, 0);    
-        pBackSub2->apply(frame, fgMask2);
+        // pBackSub2->apply(frame, fgMask2);
 
         stringstream ss;                        //reading frame and storing it as string
         ss << capture.get(CAP_PROP_POS_FRAMES);
@@ -69,15 +69,15 @@ int processVideo(string name, int X,int Y )
         // imshow("FG Mask2", fgMask2);
 
         whitePixels1 = (countNonZero(fgMask1))/pixels ;   //counting no of white pixels and then priting values on console
-        whitePixels2 = (countNonZero(fgMask2))/pixels ;
+        // whitePixels2 = (countNonZero(fgMask2))/pixels ;
         float Time = (float)stoi(frameNum)/15;
         // cout <<  Time << "," << whitePixels1 << "," << whitePixels2 << "\n";
         
-        myfile << Time << "," << whitePixels1 << "," << whitePixels2 << "\n";      
+        myfile << Time << "," << whitePixels1<< "\n";      
         
-        int keyboard = waitKey(20);             //stopping if esc is pressed on keyboard
-        if (keyboard == 27)                 
-            break;
+        // int keyboard = waitKey(20);             //stopping if esc is pressed on keyboard
+        // if (keyboard == 27)                 
+        //     break;
 
         capture>>frame;
         capture>>frame;
@@ -113,7 +113,7 @@ int main(int argc, char const *argv[])
     }
 
     ofstream file;
-    file.open("Error1.txt"); 
+    file.open("Error.txt"); 
     for (int i = 0; i < n; i++)
     {
         makeBackground(name, X_val[i], Y_val[i]);
@@ -123,9 +123,7 @@ int main(int argc, char const *argv[])
         processVideo(name, X_val[i], Y_val[i]);
         auto stopTime = high_resolution_clock::now(); 
         auto duration = duration_cast<microseconds>(stopTime - startTime);
-
-        float arr[2]; 
-        ErrorMeasure(to_string(X_val[i]) + "_" + to_string(Y_val[i]),arr);
-        file<<X_val[i]<<"_"<<Y_val[i]<<","<<arr[0]<<","<<arr[1]<<","<<duration.count()/1000000<<"\n";
+ 
+        file<<X_val[i]<<"_"<<Y_val[i]<<","<<ErrorMeasure(to_string(X_val[i]) + "_" + to_string(Y_val[i]))<<","<<duration.count()/1000000.0<<"\n";
     }
 }

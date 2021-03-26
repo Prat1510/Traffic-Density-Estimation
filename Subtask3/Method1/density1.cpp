@@ -1,5 +1,4 @@
 #include "cam.h"
-#include "error.h"
 #include <iostream>
 #include <sstream>
 #include <opencv2/imgcodecs.hpp>
@@ -9,31 +8,17 @@
 #include <opencv2/video.hpp>
 #include <fstream>
 #include <chrono>
-#include <boost/algorithm/string.hpp>
-using namespace boost::algorithm;
 using namespace cv;
 using namespace std;
 using namespace chrono;
 
-void makeBackground(string name, int X, int Y){
-    Mat frame;
-    VideoCapture capture(name + ".mp4"); 
-    for (int i = 1; i <= 2595; i++)
-    {
-        capture >> frame;  
-    }
-
-    frame = angle_correction(frame, X, Y);
-    imwrite("background_" + to_string(X) + "_" + to_string(Y) + ".jpg" , frame);
-}
-
-int processVideo(string name, int X,int Y )
-{
+void density(string name, int x){
 
     Ptr<BackgroundSubtractor> pBackSub1;        //creating two backgroundSubstractor instances and
     Ptr<BackgroundSubtractor> pBackSub2;        //two pointers p[ointing to each of them
+    int p1 = 900/x;
     pBackSub1 = createBackgroundSubtractorMOG2(500,128,false);     
-    pBackSub2 = createBackgroundSubtractorMOG2(300,16,false);
+    pBackSub2 = createBackgroundSubtractorMOG2(p1,16,false);
 
     VideoCapture capture(name + ".mp4");        //open the video
     if (!capture.isOpened()){                   //cheacking if video exists, returning error otherwise
@@ -41,7 +26,7 @@ int processVideo(string name, int X,int Y )
         return 0;
     }
 
-    Mat frame = imread("Background_" + to_string(X) + "_" + to_string(Y) + ".jpg");       //reading empty image of road for using as background
+    Mat frame = imread("Background.jpg");       //reading empty image of road for using as background
     if (frame.empty()) {                        //ensures that image exists in the folder
         cout<<"Please enter the correct background image name.\n";
         return -1;
@@ -49,9 +34,9 @@ int processVideo(string name, int X,int Y )
     double pixels;
     Mat fgMask1, fgMask2;
     ofstream myfile;
-    myfile.open("output_" + to_string(X) + "_" + to_string(Y) + ".txt");
+    myfile.open("output" + to_string(x) + "_0.txt");
     myfile <<  "Time" << "," << "Queue Density" << "," << "Dynamic Density" << "\n"; 
-    // cout <<  "Time" << "," << "Queue Density" << "," << "Dynamic Density" << "\n";
+    cout <<  "Time" << "," << "Queue Density" << "," << "Dynamic Density" << "\n";
     double whitePixels1, whitePixels2;             
 
     while (true) {
@@ -72,60 +57,65 @@ int processVideo(string name, int X,int Y )
         whitePixels2 = (countNonZero(fgMask2))/pixels ;
         float Time = (float)stoi(frameNum)/15;
         // cout <<  Time << "," << whitePixels1 << "," << whitePixels2 << "\n";
-        
-        myfile << Time << "," << whitePixels1 << "," << whitePixels2 << "\n";      
-        
+        for (int i = 0; i < x; ++i)
+        {
+            myfile << Time << "," << whitePixels1 << "," << whitePixels2 << "\n";      
+        }
+
         int keyboard = waitKey(20);             //stopping if esc is pressed on keyboard
         if (keyboard == 27)                 
             break;
 
-        capture>>frame;
-        capture>>frame;
-        capture>>frame;
-        
+        for (int i = 0; i < x; ++i)
+        {
+            capture>>frame;
+        }   
+
         if (frame.empty())                      //stop if video has ended
             break;
 
-        frame = angle_correction(frame, X, Y);        //correcting perception using code of previous subtask
+        frame = angle_correction(frame);        //correcting perception using code of pevious subtask
     }
 
     myfile.close();
+}
+
+
+
+int main(int argc, char* argv[])
+{
+    if (argc == 1)                              //ensures that name of image is given
+    {
+        cout<<"Please provide the video name as an arguement along with the program name.\n";
+        return -1;
+    }
+    if (argc > 2)                               //ensuring that extra names are not given
+    {
+        cout<<"Only one arguement has to be provided specifying the name of input video.\n";
+        return -1;
+    }
+    cout<<"n: "<<endl;
+    vector<int> v(n,0);
+    int x; 
+    for (int i = 0; i < n; i++)
+    {
+        cin>>x;
+        v[i] = x;
+    }
+    cin >> x;
+    string name = argv[1];                      //storing the name of video
+    map<float error, int runtime> Map;
+    for (int i = 0; i < n; i++)
+    {
+        x = v[i];
+        auto startTime = high_resolution_clock::now();
+        density(string name, x);
+        auto stopTime = high_resolution_clock::now();
+        auto duration = duration_cast<microseconds>(stopTime - startTime);   
+    }
+    
+    // cout << duration.count()/1000000<<endl;
     return 0;
 }
 
-int main(int argc, char const *argv[])
-{
-    string name = argv[1];
-    int n;
-    cout << "Enter n: ";
-    cin >> n;
-    vector<int> X_val; vector<int> Y_val;
-    string str;
 
-    for (int i = 0; i<n; i++)
-    {
-        cout << "Enter the " << i + 1 << " resolution\n";
-        cin>>str;
-        vector<string> temp;
-        boost::split(temp, str, boost::is_any_of("x"));
-        X_val.push_back(stoi(temp[0])); 
-        Y_val.push_back(stoi(temp[1]));
-    }
-
-    ofstream file;
-    file.open("Error1.txt"); 
-    for (int i = 0; i < n; i++)
-    {
-        makeBackground(name, X_val[i], Y_val[i]);
-    }
-    for (int i = 0; i<n; i++){
-        auto startTime = high_resolution_clock::now(); 
-        processVideo(name, X_val[i], Y_val[i]);
-        auto stopTime = high_resolution_clock::now(); 
-        auto duration = duration_cast<microseconds>(stopTime - startTime);
-
-        float arr[2]; 
-        ErrorMeasure(to_string(X_val[i]) + "_" + to_string(Y_val[i]),arr);
-        file<<X_val[i]<<"_"<<Y_val[i]<<","<<arr[0]<<","<<arr[1]<<","<<duration.count()/1000000<<"\n";
-    }
-}

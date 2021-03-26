@@ -16,10 +16,10 @@ using namespace chrono;
 int density(string name, int x){
 
     Ptr<BackgroundSubtractor> pBackSub1;        //creating two backgroundSubstractor instances and
-    Ptr<BackgroundSubtractor> pBackSub2;        //two pointers p[ointing to each of them
-    int p1 = 900/x;
+    // Ptr<BackgroundSubtractor> pBackSub2;        //two pointers p[ointing to each of them
+    // int p1 = 900/x;
     pBackSub1 = createBackgroundSubtractorMOG2(500,128,false);     
-    pBackSub2 = createBackgroundSubtractorMOG2(p1,16,false);
+    // pBackSub2 = createBackgroundSubtractorMOG2(p1,16,false);
 
     VideoCapture capture(name + ".mp4");        //open the video
     if (!capture.isOpened()){                   //cheacking if video exists, returning error otherwise
@@ -33,18 +33,18 @@ int density(string name, int x){
         return -1;
     }
     double pixels;
-    Mat fgMask1, fgMask2;
+    Mat fgMask1;
     ofstream myfile;
     myfile.open("output" + to_string(x) + "_0.txt");
-    myfile <<  "Time" << "," << "Queue Density" << "," << "Dynamic Density" << "\n"; 
-    cout <<  "Time" << "," << "Queue Density" << "," << "Dynamic Density" << "\n";
-    double whitePixels1, whitePixels2;             
+    myfile <<  "Time" << "," << "Queue Density" <<"\n"; 
+    cout <<  "Time" << "," << "Queue Density" <<"\n";
+    double whitePixels1;             
 
     while (true) {
         pixels = double(frame.total());
 
         pBackSub1->apply(frame, fgMask1, 0);    
-        pBackSub2->apply(frame, fgMask2);
+        // pBackSub2->apply(frame, fgMask2);
 
         stringstream ss;                        //reading frame and storing it as string
         ss << capture.get(CAP_PROP_POS_FRAMES);
@@ -55,17 +55,17 @@ int density(string name, int x){
         // imshow("FG Mask2", fgMask2);
 
         whitePixels1 = (countNonZero(fgMask1))/pixels ;   //counting no of white pixels and then priting values on console
-        whitePixels2 = (countNonZero(fgMask2))/pixels ;
+        // whitePixels2 = (countNonZero(fgMask2))/pixels ;
         float Time = (float)stoi(frameNum)/15;
         // cout <<  Time << "," << whitePixels1 << "," << whitePixels2 << "\n";
         for (int i = 0; i < x; ++i)
         {
-            myfile << Time << "," << whitePixels1 << "," << whitePixels2 << "\n";      
+            myfile << Time << "," << whitePixels1 << "\n";      
         }
 
-        int keyboard = waitKey(20);             //stopping if esc is pressed on keyboard
-        if (keyboard == 27)                 
-            break;
+        // int keyboard = waitKey(20);             //stopping if esc is pressed on keyboard
+        // if (keyboard == 27)                 
+        //     break;
 
         for (int i = 0; i < x; ++i)
         {
@@ -111,19 +111,15 @@ int main(int argc, char* argv[])
     for (int i = 0; i < n; i++)
     {
         x = v[i];
-        float arr[2];
+        // float arr[2];
         auto startTime = high_resolution_clock::now();
         density(name, x);
         auto stopTime = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(stopTime - startTime);   
-        ErrorMeasure(1, x, arr);
-        file << x << "," << arr[0] << "," << arr[1] << "," << duration.count()/1000000 << "\n";
+        file << x << "," << ErrorMeasure(1, x) << "," << duration.count()/1000000.0 << "\n";
     }
 
     file.close();
     
-    // cout << duration.count()/1000000<<endl;
     return 0;
 }
-
-
