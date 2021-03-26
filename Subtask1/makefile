@@ -1,8 +1,11 @@
-CC=g++
-LIB= `pkg-config --cflags --libs opencv`
-
 all:
-	$(CC) cam.cpp -o cam.out -pthread -std=c++11 $(LIB)
+	ml-lex lexer.lex
+	ml-yacc parser.yacc
+	sml
+	use "loader.sml"
 
 clean:
-	rm cam.out 
+	rm lexer.lex.sml
+	rm parser.yacc.desc
+	rm parser.yacc.sig
+	rm parser.yacc.sml
