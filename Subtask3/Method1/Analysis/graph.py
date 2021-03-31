@@ -14,7 +14,7 @@ for i in lines:
 f.close()
 
 fig, (ax1,ax2) = plt.subplots(nrows =1, ncols =2)
-ax1.set_title("Method1 - Sub-sampling frames: Utility runtime tradeoff")
+ax1.set_title("Sub-sampling frames: Utility runtime tradeoff")
 ax1.set_ylabel("Run-time")
 ax1.set_xlabel("Utility")
 ax1.scatter(x, y, label='Data')
@@ -23,7 +23,7 @@ for i in range(len(x)):
 	ax1.annotate(" (" + str(x[i]) + "," + str(y[i]) + ")" ,(x[i], y[i]), horizontalalignment='right')
 ax1.grid()
 
-ax2.set_title("Method1 - Sub-sampling frames: Runtime vs Sub-sampling parameter")
+ax2.set_title("Sub-sampling frames: Runtime vs Sub-sampling parameter")
 ax2.set_ylabel("Run-time")
 ax2.set_xlabel("Sub-sampling parameter")
 ax2.scatter(param,y, label='Data')

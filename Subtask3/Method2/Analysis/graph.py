@@ -9,7 +9,7 @@ line = []
 lines = f.readlines()
 for i in lines:
 	line = i.split(",")
-	param.append(float(line[0].split("_")[0]))
+	param.append(round(float(line[0].split("_")[0])/328.0,2))
 	x.append(float(line[1]))
 	y.append(round(float(line[2][:-1]),1))
 f.close()
