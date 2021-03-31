@@ -2,17 +2,17 @@ import matplotlib.pyplot as plt
 # from scipy.interpolate import make_interp_spline
 # import numpy as np
 
-f = open("Error_vs_Runtime.txt","r")
-x = []
+f = open("Utility_vs_Runtime.txt","r")
 y = []
+x = []
 param = []
 line = []
 lines = f.readlines()
 for i in lines:
 	line = i.split(",")
 	param.append(line[0])
-	y.append(float(line[1]))
-	x.append(float(line[2][:-1]))
+	x.append(float(line[1]))
+	y.append(float(line[2][:-1]))
 f.close()
 # x.reverse()
 # y.reverse()
@@ -22,14 +22,14 @@ f.close()
 # X_Y_Spline = make_interp_spline(x, y)
 # Y_ = X_Y_Spline(X_)
 
-plt.title("Utility runtime tradeoff: Method1")
-plt.xlabel("Run-time")
-plt.ylabel("Error")
+plt.title("Utility runtime tradeoff: Method1 - Sub-sampling frames")
+plt.ylabel("Run-time")
+plt.xlabel("Utility")
 
 plt.plot(x, y, marker = 'o', linestyle = 'dashed')
 for i in range(len(x)):
-	# plt.text(x[i],y[i],str(param[i]))
 	plt.annotate(" " + param[i], (x[i], y[i]))
+	
 plt.grid()
 
 plt.show()

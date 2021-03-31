@@ -93,9 +93,7 @@ int processVideo(string name, int X,int Y )
 int main(int argc, char const *argv[])
 {
     string name = argv[1];
-    int n;
-    cout << "Enter n: ";
-    cin >> n;
+    int n = stoi(argv[2]);
     vector<int> X_val; vector<int> Y_val;
     string str;
     double diff = 300.0/(n-1) ;
@@ -118,7 +116,7 @@ int main(int argc, char const *argv[])
         processVideo(name, X_val[i], Y_val[i]);
         auto stopTime = high_resolution_clock::now(); 
         auto duration = duration_cast<microseconds>(stopTime - startTime);
- 
+        cout << "Execution completed for resolution = " << X_val[i]<<"x"<<Y_val[i]<<endl;
         file<<X_val[i]<<"_"<<Y_val[i]<<","<<duration.count()/1000000.0<<"\n";
     }
 }

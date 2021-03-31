@@ -6,16 +6,17 @@
 #include <cmath>
 using namespace boost::algorithm;
 using namespace std;
-float ErrorMeasure(int y)
+float UtilityMeasure(int y)
 {
-	ifstream fin_x ("output.csv");
-	ifstream fin_y ("output_" + to_string(y)+".txt");
+	ifstream fin_x ("output1_0.csv");
+	ifstream fin_y ("output" + to_string(y)+"_0.txt");
 
 	vector<string> row_x{"",""};
 	vector<string> row_y{"",""};
 
 	string line_x, line_y, word, temp;
 	float error_queue = 0;
+	float base_queue = 0;
 
 	getline(fin_x, line_x);
 	getline(fin_y, line_y);
@@ -32,12 +33,13 @@ float ErrorMeasure(int y)
 
 		if (stof(row_y[1]) != 1){
 			count++;
-			error_queue = error_queue + abs(stof(row_x[1]) - stof(row_y[1]));
+			error_queue += abs(stof(row_x[1]) - stof(row_y[1]));
+			base_queue += stof(row_x[1]);
 		}
 	}
 	fin_x.close();
 	fin_y.close();
-	return error_queue/(float)count ; 
+	return (1.0 - error_queue/base_queue) ; 
 }
 
 int main(int argc, char const *argv[])
@@ -46,18 +48,19 @@ int main(int argc, char const *argv[])
 	float result;
 	string line;
 	vector<string> row_x{"",""};
-	ofstream file ("graph.txt");
-	ifstream myfile ("Num_of_threads_vs_runtime.txt");
-	string thread, runtime;
+	
+	ofstream file ("Utility_vs_Runtime.txt");
+	ifstream myfile ("runtimes.txt");
+	string skip, runtime;
 
 	for (int i = 1; i <= n; i++)
 	{
 		getline(myfile, line);
 		boost::split(row_x, line, boost::is_any_of(",")); 
-		result = ErrorMeasure(i);
-		thread = row_x[0];
+		result = UtilityMeasure(i);
+		skip = row_x[0];
 		runtime = row_x[1];
-		file << thread <<","<< result << "," <<runtime<<"\n";
+		file << skip <<","<< result << "," <<runtime<<"\n";
 	}
 	file.close();
 	myfile.close();

@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 # from scipy.interpolate import make_interp_spline
 import numpy as np
 
-f = open("Error_vs_Runtime.txt","r")
+f = open("Utility_vs_Runtime.txt","r")
 x = []
 y = []
 param = []
@@ -11,8 +11,8 @@ lines = f.readlines()
 for i in lines:
 	line = i.split(",")
 	param.append(line[0])
-	y.append(float(line[1]))
-	x.append(float(line[2][:-1]))
+	x.append(float(line[1]))
+	y.append(float(line[2][:-1]))
 f.close()
 # x.reverse()
 # y.reverse()
@@ -32,8 +32,8 @@ f.close()
 # params, params_covariance = optimize.curve_fit(test_func, x, y, p0=[2, 2])
 
 plt.title("Utility runtime tradeoff: Method1")
-plt.xlabel("Run-time")
-plt.ylabel("Error")
+plt.ylabel("Run-time")
+plt.xlabel("Utility")
 plt.scatter(x, y, label='Data')
 
 plt.plot(x, y, linestyle = 'dashed')

@@ -37,7 +37,6 @@ int density(string name, int x){
     string filename ="output" + to_string(x) + "_0.txt";
     myfile.open("../Analysis/" + filename);
     myfile <<  "Time" << "," << "Queue Density" <<"\n"; 
-    cout <<  "Time" << "," << "Queue Density" <<"\n";
     double whitePixels1;             
 
     while (true) {
@@ -116,6 +115,7 @@ int main(int argc, char* argv[])
         auto stopTime = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(stopTime - startTime);   
         file << i+1 << "," << duration.count()/1000000.0 << "\n";
+        cout<<"Execution completed for sub-sampling parameter = " << i+1 <<endl;
     }
 
     file.close();

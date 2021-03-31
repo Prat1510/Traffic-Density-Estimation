@@ -1,5 +1,6 @@
 #include "cam.h"
 #include <iostream>
+#include <cstdio>
 #include <sstream>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
@@ -72,7 +73,7 @@ void *density(void *x){
         // {
         myfile << Time << "," << whitePixels1<< "\n";      
         // }
-        if (stoi(frameNum) == end){
+        if (stoi(frameNum) == end && (i+1 != NUM_THREADS)){
             break;
         } 
         //stopping if esc is pressed on keyboard
@@ -136,6 +137,26 @@ int main(int argc, char* argv[])
         auto duration = duration_cast<microseconds>(stopTime - startTime);  
         cout << "Completed for NUM_THREADS :"<< NUM_THREADS << endl;
         file << NUM_THREADS<<","<< duration.count()/1000000.0<<"\n";
+        ofstream output;
+        output.open("../Analysis/output" + to_string(NUM_THREADS) + ".txt");
+        for (int i = 0; i < NUM_THREADS; ++i)
+        {
+            ifstream curr;
+            curr.open("../Analysis/output" + to_string(NUM_THREADS) + "_"+ to_string(i) + ".txt");
+            string line;
+            
+            if (i != 0){
+                getline(curr,line);
+            }
+
+            while (getline(curr,line)){
+                output<<line<<"\n";
+            }
+            curr.close();
+            string filename = string("../Analysis/output") + to_string(NUM_THREADS) + "_"+ to_string(i) + ".txt";
+            remove(filename.c_str());
+        }
+        output.close();
     }
     file.close();
     return 0;

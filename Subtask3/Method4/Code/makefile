@@ -8,4 +8,3 @@ run:
 
 clean:
 	rm density.out
-	rm *.txt
