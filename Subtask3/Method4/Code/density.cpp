@@ -130,9 +130,9 @@ int main(int argc, char* argv[])
                 cout << "Error:unable to join," << rc << endl;
                 exit(-1);
           }
-          // cout << "Main: completed thread id :" << i ;
-          // cout << "  exiting with status :" << status << endl;
+          
         }
+        
         auto stopTime = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(stopTime - startTime);  
         cout << "Completed for NUM_THREADS :"<< NUM_THREADS << endl;

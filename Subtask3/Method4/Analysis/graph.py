@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 # from scipy.interpolate import make_interp_spline
 import numpy as np
 
-f = open("graph.txt","r")
+f = open("Utility_vs_runtime.txt","r")
 x = []
 y = []
 param = []

@@ -44,7 +44,7 @@ int main(int argc, char const *argv[])
 	float result;
 	string line;
 	vector<string> row_x{"",""};
-	ofstream file ("graph.txt");
+	ofstream file ("Utility_vs_runtime.txt");
 	ifstream myfile ("Threads_vs_runtime.txt");
 	string thread, runtime;
 
