@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-# from scipy.interpolate import make_interp_spline
 import numpy as np
 
 f = open("Utility_vs_runtime.txt","r")
@@ -10,19 +9,23 @@ line = []
 lines = f.readlines()
 for i in lines:
 	line = i.split(",")
-	param.append(line[1])
+	param.append(float(line[1]))
 	x.append(float(line[0]))
 	y.append(float(line[2][:-1]))
 f.close()
 
-plt.title("Number of Threads_vs_Runtime")
-plt.xlabel("NUM_OF_THREADS")
-plt.ylabel("RUNTIME")
-plt.scatter(x, y, label='Data')
+fig, (ax1,ax2) = plt.subplots(nrows =2, ncols =1)
+ax1.set_title("Runtime_vs_Number of Threads and Utility_vs_Runtime")
+ax1.set_xlabel("NUM_OF_THREADS")
+ax1.set_ylabel("RUNTIME")
+ax1.scatter(x, y, label='Data')
+ax1.plot(x, y, linestyle = 'dashed')
+ax1.grid()
 
-plt.plot(x, y, linestyle = 'dashed')
-for i in range(len(x)):
-	plt.annotate(" " + param[i], (x[i], y[i]))
-plt.grid()
-
+ax2.set_ylabel("UTILITY")
+ax2.set_xlabel("RUNTIME")
+ax2.scatter(y, param, label='Data')
+ax2.set_ylim([0.98,1.02])
+ax2.grid()
+plt.tight_layout()
 plt.show()

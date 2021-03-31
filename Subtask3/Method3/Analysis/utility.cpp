@@ -38,7 +38,7 @@ float UtilityMeasure(int y)
 	}
 	fin_x.close();
 	fin_y.close();
-	return error_queue/base_queue ; 
+	return 1.0 - error_queue/base_queue ; 
 }
 
 int main(int argc, char const *argv[])

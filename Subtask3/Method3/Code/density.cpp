@@ -134,19 +134,8 @@ int main(int argc, char* argv[])
         auto duration = duration_cast<microseconds>(stopTime - startTime);    
         myfile.close();
         file << NUM_THREADS << "," << duration.count()/1000000.0 << endl;
+        cout<<"Execution completed for NUM_THREADS = "<<NUM_THREADS<<endl;
     }
     file.close();
     return 0;
 }
-
-
-// for y in range(0,imgheight,M):
-//     for x in range(0, imgwidth, N):
-//         y1 = y + M
-//         x1 = x + N
-//         tiles = im[y:y+M,x:x+N]
-
-//         cv2.rectangle(im, (x, y), (x1, y1), (0, 255, 0))
-//         cv2.imwrite("save/" + str(x) + '_' + str(y)+".png",tiles)
-
-// cv2.imwrite("asas.png",im)
