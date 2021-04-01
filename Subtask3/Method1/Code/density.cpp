@@ -14,11 +14,9 @@ using namespace chrono;
 
 int density(string name, int x){
 
-    Ptr<BackgroundSubtractor> pBackSub1;        //creating two backgroundSubstractor instances and
-    // Ptr<BackgroundSubtractor> pBackSub2;        //two pointers p[ointing to each of them
-    // int p1 = 900/x;
+    Ptr<BackgroundSubtractor> pBackSub1;        //creating one backgroundSubstractor instance
+
     pBackSub1 = createBackgroundSubtractorMOG2(500,128,false);     
-    // pBackSub2 = createBackgroundSubtractorMOG2(p1,16,false);
 
     VideoCapture capture(name + ".mp4");        //open the video
     if (!capture.isOpened()){                   //cheacking if video exists, returning error otherwise
@@ -34,18 +32,17 @@ int density(string name, int x){
     double pixels;
     Mat fgMask1;
     ofstream myfile;
-    string filename ="output" + to_string(x) + "_0.txt";
-    myfile.open("../Analysis/" + filename);
+    string filename ="output" + to_string(x) + "_0.txt";        //create a file in the analysis folder to store queue density 
+    myfile.open("../Analysis/Outfiles/" + filename);                     //in each iteration. Initialise variables. 
     myfile <<  "Time" << "," << "Queue Density" <<"\n"; 
     double whitePixels1;             
 
     while (true) {
         pixels = double(frame.total());
 
-        pBackSub1->apply(frame, fgMask1, 0);    
-        // pBackSub2->apply(frame, fgMask2);
+        pBackSub1->apply(frame, fgMask1, 0);    //apply background subtraction
 
-        stringstream ss;                        //reading frame and storing it as string
+        stringstream ss;                        //reading frame number and storing it as string
         ss << capture.get(CAP_PROP_POS_FRAMES);
         string frameNum = ss.str();
 
@@ -54,19 +51,19 @@ int density(string name, int x){
         // imshow("FG Mask2", fgMask2);
 
         whitePixels1 = (countNonZero(fgMask1))/pixels ;   //counting no of white pixels and then priting values on console
-        // whitePixels2 = (countNonZero(fgMask2))/pixels ;
+
         float Time = (float)stoi(frameNum)/15;
-        // cout <<  Time << "," << whitePixels1 << "," << whitePixels2 << "\n";
+
         for (int i = 0; i < x; ++i)
         {
             myfile << Time << "," << whitePixels1 << "\n";      
         }
 
-        // int keyboard = waitKey(20);             //stopping if esc is pressed on keyboard
+        // int keyboard = waitKey(20);          //stopping if esc is pressed on keyboard
         // if (keyboard == 27)                 
         //     break;
 
-        for (int i = 0; i < x; ++i)
+        for (int i = 0; i < x; ++i)             //skip required number of frames 
         {
             capture>>frame;
         }   
@@ -74,7 +71,9 @@ int density(string name, int x){
         if (frame.empty())                      //stop if video has ended
             break;
 
-        frame = angle_correction(frame);        //correcting perception using code of pevious subtask
+        frame = angle_correction(frame);        //correcting perception using code of angle correction 
+                                                //from previous subtask.
+    
     }
     myfile.close();
     return 0;
@@ -82,7 +81,7 @@ int density(string name, int x){
 
 int main(int argc, char* argv[])
 {
-    if (argc == 1|argc == 2)                              //ensures that name of image is given
+    if (argc == 1|argc == 2)                     //ensures that name of video and background image is given.
     {
         cout<<"Please provide the video name as an arguement along with the program name and n.\n";
         return -1;
@@ -94,31 +93,23 @@ int main(int argc, char* argv[])
     }
     int n;
     n = stoi(argv[2]);
-    // vector<int> v(n,0);
-    // int x; 
-    // for (int i = 0; i < n; i++)
-    // {
-        
-    //     v[i] = x;
-    // }
+    
     string name = argv[1];                      //storing the name of video
     
     ofstream file;
-    file.open("../Analysis/runtimes.txt");
+    file.open("../Analysis/runtimes.txt");      //create a file to store runtime vs sub-sampling parameter
 
     for (int i = 0; i < n; i++)
     {
-        // x = v[i];
-        // float arr[2];
-        auto startTime = high_resolution_clock::now();
-        density(name, i+1);
-        auto stopTime = high_resolution_clock::now();
-        auto duration = duration_cast<microseconds>(stopTime - startTime);   
-        file << i+1 << "," << duration.count()/1000000.0 << "\n";
+        auto startTime = high_resolution_clock::now();      //recording the starting time for each value of parameter
+        density(name, i+1);                                 //process for i'th iteration
+        auto stopTime = high_resolution_clock::now();       //recording the end time for each value of parameter
+        auto duration = duration_cast<microseconds>(stopTime - startTime);
+
+        file << i+1 << "," << duration.count()/1000000.0 << "\n";        //write the time taken vs parameter value for i'th iteration.    
         cout<<"Execution completed for sub-sampling parameter = " << i+1 <<endl;
     }
 
     file.close();
-    
     return 0;
 }

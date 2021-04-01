@@ -9,7 +9,7 @@ using namespace std;
 float UtilityMeasure(int y)
 {
 	ifstream fin_x ("output1_0.csv");
-	ifstream fin_y ("output" + to_string(y)+"_0.txt");
+	ifstream fin_y ("Outfiles/output" + to_string(y)+"_0.txt");
 
 	vector<string> row_x{"",""};
 	vector<string> row_y{"",""};
